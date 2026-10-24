@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نموذج تسجيل البيانات</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --border-color: #cbd5e1;
+            --success-bg: #dcfce7;
+            --success-text: #15803d;
+            --error-bg: #fee2e2;
+            --error-text: #b91c1c;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.8rem;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+
+        .api-config {
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px dashed var(--border-color);
+        }
+
+        .api-config label {
+            font-weight: bold;
+            font-size: 0.9rem;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .api-input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .grid-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 0.95rem;
+        }
+
+        label .required {
+            color: #ef4444;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .checkbox-group {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            height: 100%;
+            padding-top: 25px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .checkbox-item input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+            grid-column: 1 / -1;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-submit {
+            background-color: var(--primary);
+            color: white;
+            flex: 2;
+        }
+
+        .btn-submit:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-reset {
+            background-color: #e2e8f0;
+            color: #475569;
+            flex: 1;
+        }
+
+        .btn-reset:hover {
+            background-color: #cbd5e1;
+        }
+
+        .btn-save-api {
+            background-color: #10b981;
+            color: white;
+            padding: 8px 16px;
+            white-space: nowrap;
+        }
+
+        .btn-save-api:hover {
+            background-color: #059669;
+        }
+
+        .btn-export {
+            background-color: #059669;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .btn-export:hover {
+            background-color: #047857;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert-success {
+            background-color: var(--success-bg);
+            color: var(--success-text);
+            border: 1px solid #bbf7d0;
+        }
+
+        .alert-error {
+            background-color: var(--error-bg);
+            color: var(--error-text);
+            border: 1px solid #fecaca;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            text-align: right;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+            white-space: nowrap;
+        }
+
+        th {
+            background-color: #f1f5f9;
+            font-weight: 700;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        .spinner {
+            display: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #ffffff;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card">
+        <h2>نموذج تسجيل البيانات</h2>
+
+        <!-- إعدادات ربط Google Sheet -->
+        <div class="api-config">
+            <label for="apiUrl">رابط Google Sheets API (Google Apps Script Web App URL):</label>
+            <div class="api-input-group">
+                <input type="text" id="apiUrl" placeholder="https://script.google.com/macros/s/.../exec">
+                <button type="button" class="btn-save-api" onclick="saveApiUrl()">حفظ الرابط</button>
+            </div>
+        </div>
+
+        <div id="alertSuccess" class="alert alert-success">تم حفظ البيانات وإرسالها بنجاح!</div>
+        <div id="alertError" class="alert alert-error">يرجى ملء جميع الحقول المطلوبة بشكل صحيح.</div>
+
+        <form id="registrationForm" onsubmit="handleFormSubmit(event)">
+            <div class="grid-form">
+                
+                <div class="form-group">
+                    <label for="fullName">الاسم الكامل <span class="required">*</span></label>
+                    <input type="text" id="fullName" required placeholder="أدخل الاسم الرباعي">
+                </div>
+
+                <div class="form-group">
+                    <label for="nationality">الجنسية <span class="required">*</span></label>
+                    <input type="text" id="nationality" required placeholder="أدخل الجنسية">
+                </div>
+
+                <div class="form-group">
+                    <label for="address">العنوان <span class="required">*</span></label>
+                    <input type="text" id="address" required placeholder="العنوان التفصيلي">
+                </div>
+
+                <div class="form-group">
+                    <label for="residence">الإقامة الحالية <span class="required">*</span></label>
+                    <input type="text" id="residence" required placeholder="مدينة/دولة الإقامة">
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">رقم الهاتف <span class="required">*</span></label>
+                    <input type="text" id="phone" required placeholder="05xxxxxxxx">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">البريد الإلكتروني <span class="required">*</span></label>
+                    <input type="text" id="email" required placeholder="example@domain.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="specialty">التخصص <span class="required">*</span></label>
+                    <input type="text" id="specialty" required placeholder="التخصص المهني">
+                </div>
+
+                <div class="form-group">
+                    <label for="cvFile">السيرة الذاتية (ارفاق ملف) <span class="required">*</span></label>
+                    <input type="file" id="cvFile" accept=".pdf,.doc,.docx" required>
+                </div>
+
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="kafala">
+                            <span>كفالة</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="visa">
+                            <span>تأشيرة</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="license" onchange="toggleLicenseFields()">
+                            <span>الترخيص المهني</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="classification">درجة التصنيف</label>
+                    <input type="text" id="classification" placeholder="مثال: استشاري / أخصائي">
+                </div>
+
+                <div class="form-group">
+                    <label for="experience">عدد سنوات الخبرة <span class="required">*</span></label>
+                    <input type="number" id="experience" min="0" required placeholder="0">
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="notes">ملاحظات إضافية</label>
+                    <textarea id="notes" rows="3" placeholder="أي تفاصيل أو ملاحظات إضافية..."></textarea>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn-submit" id="submitBtn">
+                        <span id="btnSpinner" class="spinner"></span>
+                        <span>إرسال البيانات</span>
+                    </button>
+                    <button type="button" class="btn-reset" onclick="resetForm()">تفريغ النموذج لإضافة عميل جديد</button>
+                </div>
+
+            </div>
+        </form>
+    </div>
+
+    <!-- عرض البيانات المسجلة محلياً -->
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h3 style="color: var(--primary);">سجل البيانات المحفوظة محلياً</h3>
+            <button class="btn-export" onclick="exportToCSV()">تصدير إلى Excel (CSV)</button>
+        </div>
+        
+        <div class="table-container">
+            <table id="dataTable">
+                <thead>
+                    <tr>
+                        <th>الرقم المرجعي</th>
+                        <th>تاريخ ووقت الإرسال</th>
+                        <th>الاسم الكامل</th>
+                        <th>الجنسية</th>
+                        <th>العنوان</th>
+                        <th>الإقامة الحالية</th>
+                        <th>رقم الهاتف</th>
+                        <th>البريد الإلكتروني</th>
+                        <th>التخصص</th>
+                        <th>اسم ملف السيرة الذاتية</th>
+                        <th>كفالة</th>
+                        <th>تأشيرة</th>
+                        <th>الترخيص المهني</th>
+                        <th>درجة التصنيف</th>
+                        <th>عدد سنوات الخبرة</th>
+                        <th>ملاحظات إضافية</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    let submissions = JSON.parse(localStorage.getItem('formSubmissions')) || [];
+
+    window.onload = function() {
+        const savedUrl = localStorage.getItem('googleSheetsApiUrl');
+        if (savedUrl) {
+            document.getElementById('apiUrl').value = savedUrl;
+        }
+        renderTable();
+    };
+
+    function saveApiUrl() {
+        const url = document.getElementById('apiUrl').value.trim();
+        localStorage.setItem('googleSheetsApiUrl', url);
+        alert('تم حفظ رابط Google Sheets API بنجاح!');
+    }
+
+    function toggleLicenseFields() {
+        const isChecked = document.getElementById('license').checked;
+        const classificationInput = document.getElementById('classification');
+        if (!isChecked) {
+            classificationInput.value = '';
+        }
+    }
+
+    async function handleFormSubmit(event) {
+        event.preventDefault();
+        
+        const alertSuccess = document.getElementById('alertSuccess');
+        const alertError = document.getElementById('alertError');
+        const submitBtn = document.getElementById('submitBtn');
+        const spinner = document.getElementById('btnSpinner');
+
+        alertSuccess.style.display = 'none';
+        alertError.style.display = 'none';
+
+        const cvInput = document.getElementById('cvFile');
+        const cvFileName = cvInput.files.length > 0 ? cvInput.files[0].name : '';
+
+        const now = new Date();
+        const timestamp = now.getFullYear() + '-' +
+            String(now.getMonth() + 1).padStart(2, '0') + '-' +
+            String(now.getDate()).padStart(2, '0') + ' ' +
+            String(now.getHours()).padStart(2, '0') + ':' +
+            String(now.getMinutes()).padStart(2, '0') + ':' +
+            String(now.getSeconds()).padStart(2, '0');
+
+        const refId = 'REF-' + Date.now().toString().slice(-6);
+
+        const formData = {
+            refId: refId,
+            timestamp: timestamp,
+            fullName: document.getElementById('fullName').value.trim(),
+            nationality: document.getElementById('nationality').value.trim(),
+            address: document.getElementById('address').value.trim(),
+            residence: document.getElementById('residence').value.trim(),
+            phone: document.getElementById('phone').value.trim(),
+            email: document.getElementById('email').value.trim(),
+            specialty: document.getElementById('specialty').value.trim(),
+            cvFileName: cvFileName,
+            kafala: document.getElementById('kafala').checked ? 'نعم' : 'لا',
+            visa: document.getElementById('visa').checked ? 'نعم' : 'لا',
+            license: document.getElementById('license').checked ? 'نعم' : 'لا',
+            classification: document.getElementById('classification').value.trim() || 'غير محدد',
+            experience: document.getElementById('experience').value,
+            notes: document.getElementById('notes').value.trim() || 'لا يوجد'
+        };
+
+        submitBtn.disabled = true;
+        spinner.style.display = 'inline-block';
+
+        // الحفظ محلياً
+        submissions.unshift(formData);
+        localStorage.setItem('formSubmissions', JSON.stringify(submissions));
+        renderTable();
+
+        // الإرسال لـ Google Sheet إذا كان الرابط موجوداً
+        const apiUrl = localStorage.getItem('googleSheetsApiUrl') || document.getElementById('apiUrl').value.trim();
+        if (apiUrl) {
+            try {
+                await fetch(apiUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+            } catch (err) {
+                console.error("خطأ في إرسال البيانات لـ Google Sheets", err);
+            }
+        }
+
+        submitBtn.disabled = false;
+        spinner.style.display = 'none';
+
+        alertSuccess.style.display = 'block';
+        resetFormFieldsOnly();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function resetFormFieldsOnly() {
+        document.getElementById('registrationForm').reset();
+    }
+
+    function resetForm() {
+        resetFormFieldsOnly();
+        document.getElementById('alertSuccess').style.display = 'none';
+        document.getElementById('alertError').style.display = 'none';
+    }
+
+    function renderTable() {
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
+
+        submissions.forEach(item => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${item.refId}</td>
+                <td>${item.timestamp}</td>
+                <td>${item.fullName}</td>
+                <td>${item.nationality}</td>
+                <td>${item.address}</td>
+                <td>${item.residence}</td>
+                <td>${item.phone}</td>
+                <td>${item.email}</td>
+                <td>${item.specialty}</td>
+                <td>${item.cvFileName}</td>
+                <td>${item.kafala}</td>
+                <td>${item.visa}</td>
+                <td>${item.license}</td>
+                <td>${item.classification}</td>
+                <td>${item.experience}</td>
+                <td>${item.notes}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function exportToCSV() {
+        if (submissions.length === 0) {
+            alert('لا توجد بيانات للتصدير!');
+            return;
+        }
+
+        const headers = [
+            "الرقم المرجعي", "تاريخ ووقت الإرسال", "الاسم الكامل", "الجنسية", "العنوان", 
+            "الإقامة الحالية", "رقم الهاتف", "البريد الإلكتروني", "التخصص", "اسم ملف السيرة الذاتية", 
+            "كفالة", "تأشيرة", "الترخيص المهني", "درجة التصنيف", "عدد سنوات الخبرة", "ملاحظات إضافية"
+        ];
+
+        let csvContent = "\uFEFF"; // UTF-8 BOM لدعم اللغة العربية في Excel
+        csvContent += headers.join(",") + "\n";
+
+        submissions.forEach(row => {
+            const values = [
+                row.refId, row.timestamp, row.fullName, row.nationality, row.address,
+                row.residence, row.phone, row.email, row.specialty, row.cvFileName,
+                row.kafala, row.visa, row.license, row.classification, row.experience, row.notes
+            ].map(val => `"${String(val).replace(/"/g, '""')}"`);
+            
+            csvContent += values.join(",") + "\n";
+        });
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", `سجل_المتقدمين_${new Date().toISOString().slice(0,10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+</script>
+
+</body>
+</html>
